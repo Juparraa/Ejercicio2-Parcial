@@ -98,29 +98,38 @@ def sortRegiones(listaRegiones):
             index = index.getRight()
         current = current.getRight()
 
-#TODO : no estoy seguro que esto sirva, pero esoty intentando arreglar primero el sort
 def enviarVacunas(queueVacunas, StackRegiones):
     output = Queue()
+    preoutput = Stack()
     Region = StackRegiones.pop().getData()
     output.enqueue(Region.getNombre())
+    test = False
 
     while Region.getPoblacion() != 0:
-
-        Vacuna = queueVacunas.peek().getData()
-
-        if Vacuna.getCantidad() > Region.getPoblacion():
-            output.enqueue(Vacuna.getNombre())
-            output.enqueue(Region.getPoblacion())
-            Vacuna.setCantidad(Vacuna.getCantidad()- Region.getPoblacion())
-            Region.setPoblacion(0)
+        
+        if queueVacunas.peek() == None:
+            output.enqueue("no hay vacunas disponibles para enviar")
+            test = True
+            break
 
         else:
-            output.enqueue(Vacuna.getNombre())
-            output.enqueue(Vacuna.getCantidad())
-            Region.setPoblacion(Region.getPoblacion() - Vacuna.getCantidad())
-            Vacuna.setCantidad(0)
-            queueVacunas.dequeue()
+            Vacuna = queueVacunas.peek().getData()
 
+            if Vacuna.getCantidad() > Region.getPoblacion():
+                preoutput.push(str(Region.getPoblacion()))
+                preoutput.push(str(Vacuna.getNombre()))
+                Vacuna.setCantidad(Vacuna.getCantidad() - Region.getPoblacion())
+                Region.setPoblacion(0)
+
+            else:
+                preoutput.push(str(Vacuna.getCantidad()))
+                preoutput.push(str(Vacuna.getNombre()))
+                Region.setPoblacion(Region.getPoblacion() - Vacuna.getCantidad())
+                Vacuna.setCantidad(0)
+                queueVacunas.dequeue()
+
+    while preoutput.top() != None and test == False:
+        output.enqueue(preoutput.pop())
     while output.peek() != None:
         print(output.dequeue().getData(), end =" ")
     print("")
@@ -128,8 +137,8 @@ def enviarVacunas(queueVacunas, StackRegiones):
 def main():
     listaVacunas = read_vacunas()
     listaRegiones = read_regiones()
-    sortVacunas(listaVacunas)       #Vacunas organizadas según su cantidad en orden ascendiente
-    sortRegiones(listaRegiones)     #Regiones organizadas según su población en orden ascendiente
+    #sortVacunas(listaVacunas)       #Vacunas organizadas según su cantidad en orden ascendiente
+    #sortRegiones(listaRegiones)     #Regiones organizadas según su población en orden ascendiente
     Vacunas = Queue()
     Regiones = Stack()
     while listaVacunas.size() > 0:
@@ -137,7 +146,12 @@ def main():
     while listaRegiones.size() > 0:
         Regiones.push(listaRegiones.popFront())
     while Regiones.top() != None:
-        enviarVacunas(Vacunas, Regiones)
+        if Vacunas.peek() != None:
+            enviarVacunas(Vacunas, Regiones)
+        else:
+            out = Regiones.pop().getData()
+            print(out.getNombre(), end="")
+            print(" no hay vacunas disponibles para enviar")
          
 if __name__ == '__main__':
     main()

@@ -71,30 +71,29 @@ def read_regiones():
 
     return listaRegiones
 
-#TODO : arreglar esto, no sirve, se supone que las ordene en orden ascendente
 def sortVacunas(listaVacunas):
     current = listaVacunas.head
     index = None
     while current != None:
         index = current.getRight()
         while index != None:
-            if(current.getData().getCantidad() < index.getData().getCantidad()):
-                temp = current.getData()
-                current.setData(index.getData())
-                index.setData(temp)
+            if(current.getData().getCantidad() > index.getData().getCantidad()):
+                temp = Vacuna(current.getData().getNombre(),current.getData().getCantidad())
+                current.data = index.data
+                index.data = temp
             index = index.getRight()
         current = current.getRight()
-    
-#TODO : arreglar esto, no sirve, se supone que las ordene en orden ascendente
+
 def sortRegiones(listaRegiones):
     current = listaRegiones.head
     index = None
     while current != None:
         index = current.getRight()
         while index != None:
-            if(current.getData().getPoblacion() > index.getData().getPoblacion()):
-                current.setRight(index.getRight())
-                index.setRight(current)
+            if(current.getData().getPoblacion() >= index.getData().getPoblacion()):
+                temp = Region(current.getData().getNombre(),current.getData().getPoblacion())
+                current.data = index.data
+                index.data = temp
             index = index.getRight()
         current = current.getRight()
 
@@ -137,8 +136,9 @@ def enviarVacunas(queueVacunas, StackRegiones):
 def main():
     listaVacunas = read_vacunas()
     listaRegiones = read_regiones()
-    #sortVacunas(listaVacunas)       #Vacunas organizadas según su cantidad en orden ascendiente
-    #sortRegiones(listaRegiones)     #Regiones organizadas según su población en orden ascendiente
+    print("")
+    sortVacunas(listaVacunas)       #Vacunas organizadas según su cantidad en orden ascendiente
+    sortRegiones(listaRegiones)     #Regiones organizadas según su población en orden ascendiente
     Vacunas = Queue()
     Regiones = Stack()
     while listaVacunas.size() > 0:

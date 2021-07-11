@@ -103,7 +103,7 @@ def enviarVacunas(queueVacunas, StackRegiones):
     Region = StackRegiones.pop().getData()
     output.enqueue(Region.getNombre())
     test = False
-
+    listaEnviadas = LinkedList()
     while Region.getPoblacion() != 0:
         
         if queueVacunas.peek() == None:
@@ -112,20 +112,30 @@ def enviarVacunas(queueVacunas, StackRegiones):
             break
 
         else:
-            Vacuna = queueVacunas.peek().getData()
+            vacuna = queueVacunas.peek().getData()
 
-            if Vacuna.getCantidad() > Region.getPoblacion():
-                preoutput.push(str(Region.getPoblacion()))
-                preoutput.push(str(Vacuna.getNombre()))
-                Vacuna.setCantidad(Vacuna.getCantidad() - Region.getPoblacion())
+            if vacuna.getCantidad() > Region.getPoblacion():
+                a = Region.getPoblacion()
+                b = vacuna.getNombre()
+                newVac = Vacuna(b,a)
+                listaEnviadas.pushfront(newVac)
+                vacuna.setCantidad(vacuna.getCantidad() - Region.getPoblacion())
                 Region.setPoblacion(0)
 
             else:
-                preoutput.push(str(Vacuna.getCantidad()))
-                preoutput.push(str(Vacuna.getNombre()))
-                Region.setPoblacion(Region.getPoblacion() - Vacuna.getCantidad())
-                Vacuna.setCantidad(0)
+                a = vacuna.getCantidad()
+                b = vacuna.getNombre()
+                newVac = Vacuna(b,a)
+                listaEnviadas.pushfront(newVac)
+                Region.setPoblacion(Region.getPoblacion() - vacuna.getCantidad())
+                vacuna.setCantidad(0)
                 queueVacunas.dequeue()
+            
+    sortVacunas(listaEnviadas)
+    while listaEnviadas.size() > 0:
+        newVac = listaEnviadas.popFront()
+        preoutput.push(str(newVac.getCantidad()))
+        preoutput.push(str(newVac.getNombre()))
 
     while preoutput.top() != None and test == False:
         output.enqueue(preoutput.pop())
